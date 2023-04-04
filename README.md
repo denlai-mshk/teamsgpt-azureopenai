@@ -14,7 +14,7 @@
 3. Azure OpenAI Registration for your Azure subscription
 4. Visual Studio / Visual Studio Code
 5. Teams Toolkit
-6. C# or Javascript programming capabilites
+6. C# or Javascript programming capabilities
 [More prerequisites in details](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/tools-prerequisites)
 
 ## Microsoft 365 Developer Program
@@ -30,31 +30,42 @@
 - If you want to run this tutorial smoothly, avoid spend a lot of time on troubleshooting, [free account is recommended](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/tools-prerequisites#azure-account)
 
 ## Azure OpenAI (AOAI) Registration
-- To access AOAI's chatGPT model endpoint and deploy a AOAI resource for your custom app, your Azure subscription must be approved.
+- To access AOAI's ChatGPT model endpoint and deploy a AOAI resource for your custom app, your Azure subscription must be approved.
 - Azure OpenAI requires registration and is currently only available to approved **enterprise customers and partners**. Customers who wish to use Azure OpenAI are required to submit a [registration form](https://aka.ms/oai/access)
 - [Azure OpenAI Registration process](https://learn.microsoft.com/en-us/legal/cognitive-services/openai/limited-access#registration-process)
 
-*Hints: You can accerlate the application process by using the Azure subscription under enterprise agreement. The App Service deloyed with your free Azure subscription can send AOAI API to the granted AOAI resources that deployed with your enterprise Azure subscription.*
+*Hints: You can accelerate the application process by using the Azure subscription under enterprise agreement. The App Service deployed with your free Azure subscription can send AOAI API to the granted AOAI resources that deployed with your enterprise Azure subscription.*
 
 ## Install Teams Toolkit
-- You can either use your favoriate Dev IDE like Visual Studio Code or Visual Studio. Both of them support Teams Toolkit. If you prefer javascipt programming, go for VSC instead of writing C# in VS. Check it out here for corresponding installation guides
+- You can either use your favorite Dev IDE like Visual Studio Code or Visual Studio. Both of them support Teams Toolkit. If you prefer Javascipt programming, go for VSC whereas C# for VS. Check it out here for corresponding installation guides
   - [Visual Studio Code / Typescript](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/install-teams-toolkit?tabs=vscode&pivots=visual-studio-code#install-teams-toolkit-for-visual-studio)
   - [Visual Studio / C#](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/install-teams-toolkit?tabs=vscode&pivots=visual-studio#install-teams-toolkit-for-visual-studio)
  
-*Hints: Javascript is preferred as AOAI API library only avaiable with Python (Preview) and with Node.js ([from Github community](https://github.com/1openwindow/azure-openai-node)) at this moment (~March 2023)*
+*Hints: Javascript is preferred as AOAI API library only available with Python (Preview) and with Node.js ([from Github community](https://github.com/1openwindow/azure-openai-node)) at this moment (~March 2023)*
 
 ## Create a new Teams Project and start debugging in local environment
 1. In VSC, click the Teams Toolkit icon on the left blade menu, select "Create a new app" > "Start from a sample"
 2. Pick **"Bot App with SSO enabled"** as your template project and assign a new folder path
 ![ssosample](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/teamsgpt-dev-createnewapp.png)
-3. After the project created, press F5 to debug start this custom app without any code changes.
-4. The debug pipeline will invoke your browser (Edge/Chrome), and you need to sign in with your sandbox user account like "xxxx@f33kn22.onmicrosoft.com". 
-5. A modal screen will be prompted to ask you install your custom app like "xxxxxxxxxx-local-debug"
+3. Sign in both M365 and Azure accounts
+![singinkit](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/signin_teamstoolkit.png)
+- If no Azure subscription has been found after signing succeed, try to edit/create one subscriptionInfo.json, and then try to sign in and sign off back and fore for a few times.
+##### {projectfolder}\bot-sso\.fx\subscriptionInfo.json
+```javascript
+    {
+      "subscriptionId": "{your azure subscription Id}",
+      "subscriptionName": "{your azure subscription name}",
+      "tenantId": "{your tenant Id}",
+    }
+```
+4. After the project created, press F5 to debug start this custom app without any code changes.
+5. The debug pipeline will invoke your browser (Edge/Chrome), and you need to sign in with your sandbox user account like "xxxx@f33kn22.onmicrosoft.com". 
+6. A modal screen will be prompted to ask you to install your custom app like "xxxxxxxxxx-local-debug"
 ![debugmode](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/teamsgpt-dev-01.png)
-6. In the teams chat, you can try to send "welcome", "learn" to bot. This will invoke the pre-built logic of AdaptiveCards.
+7. In the teams chat, you can try to send "welcome", "learn" to bot. This will invoke the pre-built logic of AdaptiveCards.
 - Check it out here for more details, [Designing Adaptive Cards for your Microsoft Teams app](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/design-effective-cards?tabs=design)
 ![acard](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/adaptivecards.jpg)
-7. Right now, if everythings on the right track, please stop the debugger to avoid any disruption made during app deployment.
+8. Right now, if everything on the right track, please stop the debugger to avoid any disruption made during app deployment.
 
 ## Deploy to Azure Cloud
 - Provisioning and deploying your custom app to Azure is very easy things. Teams toolkit will do all the complicated things for you, what you need to do 
@@ -62,10 +73,10 @@
 ![tkmenu](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/teamsgpt-teamstoolkit.png)
 1. Click the Teams toolkit menu> Deployment > Provision in the cloud, and then be patient. A prompt will be pop-up asking for Azure Region and ResourceGroup name. Please stick with [AOAI supported regions](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/overview#features-overview) like EastUS.
 2. Click the Teams toolkit menu> Deployment > Deploy to the cloud, and then be patient. 
-3. Click the Teams toolkit menu> Deployment > Publish to Teams, a prompt will be pop-up asking you either "send your app to your Teams administrator.." or "send it to your Teams administrator manually". We will pick "Install for your organization" for convenience.
+3. Click the Teams toolkit menu> Deployment > Publish to Teams, a prompt will be pop-up asking you either "send your app to your Teams administrator." or "send it to your Teams administrator manually". We will pick "Install for your organization" for convenience.
 ![askpublish](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/teamsgpt-askpublish.png)
 
-## Approve the pending custom app
+## Approving the pending custom app
 1. Go to [Teams admin center](https://admin.teams.microsoft.com/policies/manage-apps)
 2. Left blade menu > Teams apps > Manage apps
 3. In the grid listing, put your app name like "SSOBotSample" in the "Search by name" textbox.
@@ -86,7 +97,7 @@
 - We will setup a TeamsGPT bot in the conversation chat window with others.
 1. Go to [M365 admin center](https://admin.microsoft.com/Adminportal/Home?#/users) > Users > Active Users > 
 2. Pick one predefined user as tester, reset the password, spin off another Teams (browser), sign in with this tester account.
-3. Make a chat by saying hello with your tester to initate a new chat window.
+3. Make a chat by saying hello with your tester to initiate a new chat window.
 4. Teams > Apps > Built for your org > click your custom app
 ![addtochat2](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/teamsgpt-addtowhichchat.png)
 5. In the App master page, click the down arrow to expose more options. Try "Add to a chat", select the chat with your tester
@@ -96,26 +107,26 @@
 
 ## Review provisioned Azure resources
 - Teams toolkit help us to CI/CD our custom app to Azure cloud. Let's check what resources have been deployed.
-1. Sign in [Azure Portal](https://portal.azure.com/) with yor free account.
+1. Sign in [Azure Portal](https://portal.azure.com/) with your free account.
 2. Locate the resource group you have named.
 ![azureres](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/teamsgpt-azureresources.png)
 3. 4 resources have been provisioned to support your custom app workload.
-   - Azure Bot service : This is the underlying infrastructure that used to support the Bot framework integrated with your custom app.
-   - App Service plan : This is the underlying infrastructure that used to support your App Service.
-   - App Service : This is the logical app instance to support your custom app logic.
-   - Managed Identity :  This is used to associated with the App Service for IAM RABC permission.
+   - Azure Bot service: This is the underlying infrastructure that used to support the Bot framework integrated with your custom app.
+   - App Service plan: This is the underlying infrastructure that used to support your App Service.
+   - App Service: This is logical app instance to support your custom app logic.
+   - Managed Identity:  This is used to associate with the App Service for IAM RABC permission.
 4. Later, we will go back to App Service to add some application parameters for AOAI.
 
-## Deploy AOAI ChatGTP resources in Azure Cognitive Services
-1. Please follow this [guideline](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/how-to/create-resource?pivots=web-portal) to deploy a GPT-35-Turbo resource. Keep the depoyment region same with the deployed App Service can save the cost on cross-region traffic.
+## Deploy AOAI ChatGPT resources in Azure Cognitive Services
+1. Please follow this [guideline](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/how-to/create-resource?pivots=web-portal) to deploy a GPT-35-Turbo resource. Keep the deployment region same with the deployed App Service can save the cost on cross-region traffic.
 2. After the instance created, follow this [guideline](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/chatgpt-quickstart?tabs=command-line&pivots=programming-language-python#retrieve-key-and-endpoint) to copy
    - KEY
    - Endpoint
    - the Model name you typed (not the model name displayed for selection)
-3. Try out the [chat playground](https://oai.azure.com/portal/chat) to get the concept of how to interact with the chatGPT model.
+3. Try out the [chat playground](https://oai.azure.com/portal/chat) to get the concept of how to interact with the ChatGPT model.
 
-## Modify your custom app to send AOAI api to ChatGTP resources
-- First of all, Python is the one and only one supported AOAI library with PREVIEW agreement at this moment (~March 2023). As your custom app is bootstrapped by Teams toolkit project template that written in Javascript. You can leverage the node.js version of AOAI API library that forked by community over here [azure-openai-node](https://github.com/1openwindow/azure-openai-node)
+## Modify your custom app to send AOAI API to ChatGPT resources
+- First of all, Python is the one and only one supported AOAI library with PREVIEW agreement at this moment (~March 2023). As your custom app is bootstrapped by Teams toolkit project template that is written in Javascript. You can leverage the node.js version of AOAI API library that forked by community over here [azure-openai-node](https://github.com/1openwindow/azure-openai-node)
 1. Install the library in this path *{projectfolder}\bot-sso\bot*
 ```javascript
 npm install azure-openai -save
@@ -125,15 +136,65 @@ npm install azure-openai -save
 ```javascript
     "version": "1.0.1",
 ```
-3. Replace the teamsBot.ts by the [teamsBot.ts](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/bot-sso/bot/teamsBot.ts) in this repo:main
+3. Replace your teamsBot.ts by this [teamsBot.ts](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/bot-sso/bot/teamsBot.ts) in this repo:main. This revised teamsBot.ts added a async API call to AOAI resource within OnMessage handler.
+    
+```javascript
+   //configure AOAI account key
+    const { Configuration, OpenAIApi } = require("azure-openai");
+    const configuration = new Configuration({
+      apiKey: process.env.AOAI_APIKEY,
+      azure: {
+         apiKey: process.env.AOAI_APIKEY,
+         endpoint: process.env.AOAI_ENDPOINT,
+         deploymentName: process.env.AOAI_MODEL,
+      }
+    });
+    const openai = new OpenAIApi(configuration);
+
+    //incoming message handler
+    this.onMessage(async (context, next) => {
+      console.log("Running with Message Activity.");
+
+      let txt = context.activity.text;
+      console.log("Raw message: " + txt);
+      // remove the mention of this bot
+      const removedMentionText = TurnContext.removeRecipientMention(
+        context.activity
+      );
+      if (removedMentionText) {
+        // Remove the line break
+        txt = removedMentionText.toLowerCase().replace(/\n|\r/g, "").trim();
+      }
+
+      let revisedprompt = [{role:"system",content:process.env.CHATGPT_SYSTEMCONTENT},{role:"user", content:txt}];
+      console.log("createChatCompletion request: " + JSON.stringify(revisedprompt));
+      try {
+        const completion = await openai.createChatCompletion({
+          messages: revisedprompt,
+          temperature: parseInt(process.env.CHATFPT_TEMPERATURE),
+          max_tokens:parseInt(process.env.CHATGPT_MAXTOKEN),
+          top_p: parseInt(process.env.CHATGPT_TOPP),
+          stop: process.env.CHATGPT_STOPSEQ
+        });
+        console.log("createChatCompletion response: " + completion.data.choices[0].message.content);
+        await context.sendActivity(completion.data.choices[0].message.content);
+      } catch (error) {
+        if (error.response) {
+          console.log(error.response.status);
+          console.log(error.response.data);
+        } else {
+          console.log(error.message);
+        }
+      }      
+```
 ##### {projectfolder}\bot-sso\bot\teamsBot.ts 
-4. Add the following environmental paramaters in 
-##### {projectfolder}\bot-sso\bot\public\ .env.teamsfx.local
+4. Add the following environmental parameters in 
+##### {projectfolder}\bot-sso\bot\ .env.teamsfx.local
 ```javascript
 AOAI_APIKEY={your AOAI KEY}
 AOAI_ENDPOINT={your AOAI endpoint}
 AOAI_MODEL={your AOAI deployed model name}
-CHATGPT_SYSTEMCONTENT={system context for chatgpt model}
+CHATGPT_SYSTEMCONTENT="You are an AI assistant that helps people find information."
 CHATGPT_MAXTOKEN=1000
 CHATGPT_TOPP=0.90
 CHATGPT_STOPSEQ=
@@ -159,15 +220,15 @@ CHATFPT_TEMPERATURE=0.7
 - If your Proof of Concept/Point of View runs smoothly, it may be a good idea to set up a production platform for service deployment. Here is the reference architecture.
   - **Public Endpoint Protection:** The Teams client sends messages over the public internet to your App Service. Utilizing FrontDoor or Application Gateway with Web Application Firewall can provide a high SLA to your service, protecting it from DDoS attacks. [DDoS Network Protection with PaaS web application architecture](https://learn.microsoft.com/en-us/azure/ddos-protection/ddos-protection-reference-architectures#ddos-network-protection-with-paas-web-application-architecture)
   - **Throttle Control:** Imagine what would happen if your users became addicted to this service. To protect your backend resources from spamming activities, API Management offers a [Rate limits and quotas policy](https://learn.microsoft.com/en-us/azure/api-management/api-management-sample-flexible-throttling#rate-limits-and-quotas).
-  - **Chat Session:** Every single message sent from Teams client is stateless as well as the chatGPT model API. So, the backend service need to have a chat session controlling logic to aggregate the previous messages have been sent from Teams user to bot. Azure Redis Cache is good for this sake.
+  - **Chat Session:** Every single message sent from Teams client is stateless as well as the ChatGPT model API. So, the backend service needs to have a chat session controlling logic to aggregate the previous messages that have been sent from Teams user to bot. Azure Redis Cache is good for this sake.
   - **Key and Secret Management:** The AOAI resource's KEY, endpoint and model name should not be stored in environmental variables, as this is not the best security practice. Instead, they should be stored in Azure Key Vault for better management of the application secret.
   - **Sensitive Query Censorship:** The custom app workload pane can be used to perform sensitive data filtering, alerting, and monitoring. For example, App Service can query Microsoft Purview data catalog to determine if a user query is not compliant with enterprise IT policy, and then block the query instead. 
   - **Networking Security:** By using VNET injection, App Gateway, APIM, App Service, and Redis can be protected within the confines of a VNET. Meanwhile, Purview, Bot service and AOAI can take advantage of VNET integration (privatelink) to ensure greater security compliance.
 
 ## Custom app logic To-Do List
 - AOAI offers a range of GPT models beyond ChatGPT. With these models, we can do more than just chat with a bot - such as summarizing documents, generating product descriptions, which leveraging text-davinci-003 and text-embedding-ada-002
-- To further enhance custom app capabilities, here are some to-do recommendation.
-  - Using Adaptive Cards (Teams Toolkit) to add a button for regenerating the user's question with different model parameters
+- To further enhance custom app capabilities, here are some to-do recommendations.
+  - Using Adaptive Cards (Teams Toolkit) to add a button for regenerating the user's question with different model parameters.
   - Add command set to let power user
     - send query with specified model parameters like: max. token, temperature
     - summarizing document or text generation

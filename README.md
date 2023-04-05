@@ -61,7 +61,7 @@
     }
 ```
 4. After the project created, press F5 to debug start this custom app without any code changes.
-5. The debug pipeline will invoke your browser (Edge/Chrome), and you need to sign in with your sandbox user account like "xxxx@f33kn22.onmicrosoft.com". 
+5. The debug pipeline will invoke your browser (Edge/Chrome), and you need to sign in with your sandbox user account like "xxxx@yyyyyyy.onmicrosoft.com". 
 6. A modal screen will be prompted to ask you to install your custom app like "xxxxxxxxxx-local-debug"
 ![debugmode](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/teamsgpt-dev-01.png)
 7. In the teams chat, you can try to send "welcome", "learn" to bot. This will invoke the pre-built logic of AdaptiveCards.

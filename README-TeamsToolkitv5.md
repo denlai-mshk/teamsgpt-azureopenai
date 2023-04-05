@@ -51,17 +51,17 @@
 ![ssosample](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/teamsgpt-dev-createnewapp.png)
 3. Sign in both M365 and Azure accounts
 ![singinkit](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/signin_teamstoolkit.png)
-- If no Azure subscription has been found after signing succeed, try to edit/create one subscriptionInfo.json, and then try to sign in and sign off back and fore for a few times.
-##### {projectfolder}\bot-sso-v5\.fx\subscriptionInfo.json
+- If no Azure subscription has been found after signing succeed, try to edit teamsapp.yml, fill in your *AZURE_SUBSCRIPTION_ID* and targeted *AZURE_RESOURCE_GROUP_NAME* and then try to sign in and sign off back and fore for a few times, or restart VSC.
+##### {projectfolder}\bot-sso-v5\teamsapp.yml
 ```javascript
     {
-      "subscriptionId": "{your azure subscription Id}",
-      "subscriptionName": "{your azure subscription name}",
-      "tenantId": "{your tenant Id}",
+        with:
+            subscriptionId: ${{AZURE_SUBSCRIPTION_ID}} # The AZURE_SUBSCRIPTION_ID is a built-in environment variable. TeamsFx will ask you select one subscription if its value is empty. You're free to reference other environment varialbe here, but TeamsFx will not ask you to select subscription if it's empty in this case.
+            resourceGroupName: ${{AZURE_RESOURCE_GROUP_NAME}} # The AZURE_RESOURCE_GROUP_NAME is a built-in environment variable. TeamsFx will ask you to select or create one resource group if its value is empty. You're free to reference other environment varialbe here, but TeamsFx will not ask you to select or create resource grouop if it's empty in this case.
     }
 ```
 4. After the project created, press F5 to debug start this custom app without any code changes.
-5. The debug pipeline will invoke your browser (Edge/Chrome), and you need to sign in with your sandbox user account like "xxxx@f33kn22.onmicrosoft.com". 
+5. The debug pipeline will invoke your browser (Edge/Chrome), and you need to sign in with your sandbox user account like "xxxx@yyyyyyy.onmicrosoft.com". 
 6. A modal screen will be prompted to ask you to install your custom app like "xxxxxxxxxx-local-debug"
 ![debugmode](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/teamsgpt-dev-01.png)
 7. In the teams chat, you can try to send "welcome", "learn" to bot. This will invoke the pre-built logic of AdaptiveCards.
@@ -118,12 +118,11 @@
 - Teams toolkit help us to CI/CD our custom app to Azure cloud. Let's check what resources have been deployed.
 1. Sign in [Azure Portal](https://portal.azure.com/) with your free account.
 2. Locate the resource group you have named.
-![azureres](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/teamsgpt-azureresources.png)
-3. 4 resources have been provisioned to support your custom app workload.
+![azureres](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/v5resourcegroup.png)
+3. 3 resources have been provisioned to support your custom app workload.
    - Azure Bot service: This is the underlying infrastructure that used to support the Bot framework integrated with your custom app.
    - App Service plan: This is the underlying infrastructure that used to support your App Service.
    - App Service: This is logical app instance to support your custom app logic.
-   - Managed Identity:  This is used to associate with the App Service for IAM RABC permission.
 4. Later, we will go back to App Service to add some application parameters for AOAI.
 
 ## Deploy AOAI ChatGPT resources in Azure Cognitive Services

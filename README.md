@@ -238,10 +238,11 @@ CHATFPT_TEMPERATURE=0.7
 - To further enhance custom app capabilities, here are some to-do recommendations.
   - Using Adaptive Cards (Teams Toolkit) to add a button for regenerating the user's question with different model parameters.
   - Besides of using Redis to implement a stateful conversation, you can consider to adopt the out of box capability provided by [Bot Framework SDK](https://learn.microsoft.com/en-us/azure/bot-service/bot-builder-basics?view=azure-bot-service-4.0): [Waterfall dialogs](https://learn.microsoft.com/en-us/azure/bot-service/bot-builder-concept-waterfall-dialogs?view=azure-bot-service-4.0#waterfall-dialogs), which supports stateful complex conversation flow.
+![waterfall](https://learn.microsoft.com/en-us/azure/bot-service/v4sdk/media/bot-builder-dialog-concept.png)
   - Add command set to let power user
     - send query with specified model parameters like: max. token, temperature
-    - summarizing document or text generation
-    - classify and translate the text
+    - summarizing document or text generation (*text-davinci-003*)
+    - classify and translate the text (*text-embedding-ada-002*)
     
 ## References
 - [Publish Teams apps using Teams Toolkit](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/publish)

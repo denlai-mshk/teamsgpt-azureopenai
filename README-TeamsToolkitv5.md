@@ -40,8 +40,8 @@
 - You can either use your favorite Dev IDE like Visual Studio Code or Visual Studio. Both of them support Teams Toolkit. If you prefer Javascipt programming, go for VSC whereas C# for VS. Check it out over here for corresponding installation guides
   - [Visual Studio Code / Typescript](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/install-teams-toolkit?tabs=vscode&pivots=visual-studio-code#install-teams-toolkit-for-visual-studio)
   - [Visual Studio / C#](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/install-teams-toolkit?tabs=vscode&pivots=visual-studio#install-teams-toolkit-for-visual-studio)
-- this repo\bot-sso uses Teams Toolkit Release version 4.2.4
-- If you installed Toolkit PreRelease version 4.99.2 (aka v5.0), please use another folder repo\bot-sso-v5 and refer to another [README-TeamsToolkitv5.md](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/README-TeamsToolkitv5.md) instead.
+- this repo\bot-sso-v5 uses Teams Toolkit PreRelease Version 4.99.2 (aka v5.0)
+- If you installed Toolkit Release version 4.2.4, please use another folder repo\bot-sso and refer to another [README.md](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/README.md) instead.
 
 *Hints: Javascript is preferred as AOAI API library only available with Python (Preview) and with Node.js ([from Github community](https://github.com/1openwindow/azure-openai-node)) at this moment (~March 2023)*
 
@@ -52,7 +52,7 @@
 3. Sign in both M365 and Azure accounts
 ![singinkit](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/signin_teamstoolkit.png)
 - If no Azure subscription has been found after signing succeed, try to edit/create one subscriptionInfo.json, and then try to sign in and sign off back and fore for a few times.
-##### {projectfolder}\bot-sso\.fx\subscriptionInfo.json
+##### {projectfolder}\bot-sso-v5\.fx\subscriptionInfo.json
 ```javascript
     {
       "subscriptionId": "{your azure subscription Id}",
@@ -141,31 +141,46 @@
 npm install azure-openai -save
 ```
 2. Modify your custom app version is very important because the new version of custom app take times (~ few hours) to be reflected to Teams user in Teams App publishing workflow. An incremental versioning practice is recommended to make things clear. Try increment the "version":"1.0.0" to 1.0.1,
-##### {projectfolder}\bot-sso\templates\appPackage\manifest.template.json
+##### {projectfolder}\bot-sso-v5\appPackage\manifest.json
 ```javascript
     "version": "1.0.1",
 ```
-3. Replace your teamsBot.ts by this [teamsBot.ts](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/bot-sso/bot/teamsBot.ts) in this repo:main. This revised teamsBot.ts added a async API call to AOAI resource within OnMessage handler.
-##### {projectfolder}\bot-sso\bot\teamsBot.ts 
+*Hints: If you want to change the custom app name*
 ```javascript
-   //configure AOAI account key
-    const { Configuration, OpenAIApi } = require("azure-openai");
-    const configuration = new Configuration({
-      apiKey: process.env.AOAI_APIKEY,
-      azure: {
-         apiKey: process.env.AOAI_APIKEY,
-         endpoint: process.env.AOAI_ENDPOINT,
-         deploymentName: process.env.AOAI_MODEL,
-      }
-    });
-    const openai = new OpenAIApi(configuration);
+    "name": {
+        "short": "sso-bot-${{TEAMSFX_ENV}}",
+        "full": "full name for sso-bot"
+    },
+    "description": {
+        "short": "short description for sso-bot",
+        "full": "full description for sso-bot"
+    },
+```
+3. Replace your teamsBot.ts by this [teamsBot.ts](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/bot-sso/bot/teamsBot.ts) in this repo:main. This revised teamsBot.ts added a async API call to AOAI resource within OnMessage handler.
+##### {projectfolder}\bot-sso-v5\bot\teamsBot.ts 
+```javascript
+import { Configuration, OpenAIApi, ChatCompletionRequestMessageRoleEnum} from "azure-openai"; 
+```
+```javascript
 
-    //incoming message handler
+    this.openAiApi = new OpenAIApi(
+      new Configuration({
+         apiKey: process.env.AOAI_APIKEY,
+         // add azure info into configuration
+         azure: {
+            apiKey: process.env.AOAI_APIKEY,
+            endpoint: process.env.AOAI_ENDPOINT,
+            // deploymentName is optional, if you donot set it, you need to set it in the request parameter
+            deploymentName: process.env.AOAI_MODEL,
+         }
+      }),
+    );
+
+  
     this.onMessage(async (context, next) => {
       console.log("Running with Message Activity.");
 
       let txt = context.activity.text;
-      console.log("Raw message: " + txt);
       // remove the mention of this bot
       const removedMentionText = TurnContext.removeRecipientMention(
         context.activity
@@ -175,10 +190,11 @@ npm install azure-openai -save
         txt = removedMentionText.toLowerCase().replace(/\n|\r/g, "").trim();
       }
 
-      let revisedprompt = [{role:"system",content:process.env.CHATGPT_SYSTEMCONTENT},{role:"user", content:txt}];
+      let revisedprompt = [{role:ChatCompletionRequestMessageRoleEnum.System,content:process.env.CHATGPT_SYSTEMCONTENT},{role:ChatCompletionRequestMessageRoleEnum.User, content:txt}];
       console.log("createChatCompletion request: " + JSON.stringify(revisedprompt));
       try {
-        const completion = await openai.createChatCompletion({
+        const completion = await this.openAiApi.createChatCompletion({
+          model: process.env.AOAI_MODEL,
           messages: revisedprompt,
           temperature: parseInt(process.env.CHATFPT_TEMPERATURE),
           max_tokens:parseInt(process.env.CHATGPT_MAXTOKEN),
@@ -194,10 +210,11 @@ npm install azure-openai -save
         } else {
           console.log(error.message);
         }
-      }      
+      }
+         
 ```
 4. Add the following environmental parameters in 
-##### {projectfolder}\bot-sso\bot\ .env.teamsfx.local
+##### {projectfolder}\bot-sso-v5\.localSettings
 ```javascript
 AOAI_APIKEY={your AOAI KEY}
 AOAI_ENDPOINT={your AOAI endpoint}
@@ -238,11 +255,12 @@ CHATFPT_TEMPERATURE=0.7
 - To further enhance custom app capabilities, here are some to-do recommendations.
   - Using Adaptive Cards (Teams Toolkit) to add a button for regenerating the user's question with different model parameters.
   - Besides of using Redis to implement a stateful conversation, you can consider to adopt the out of box capability provided by [Bot Framework SDK](https://learn.microsoft.com/en-us/azure/bot-service/bot-builder-basics?view=azure-bot-service-4.0): [Waterfall dialogs](https://learn.microsoft.com/en-us/azure/bot-service/bot-builder-concept-waterfall-dialogs?view=azure-bot-service-4.0#waterfall-dialogs), which supports stateful complex conversation flow.
+![waterfall](https://learn.microsoft.com/en-us/azure/bot-service/v4sdk/media/bot-builder-dialog-concept.png)  
   - Add command set to let power user
     - send query with specified model parameters like: max. token, temperature
-    - summarizing document or text generation
-    - classify and translate the text
-    
+    - summarizing document or text generation (*text-davinci-003*)
+    - classify and translate the text (*text-embedding-ada-002*)
+   
 ## References
 - [Publish Teams apps using Teams Toolkit](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/publish)
 - [Get started for building and deploying customized apps for Microsoft Teams](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/teams-toolkit-fundamentals?pivots=visual-studio-code)

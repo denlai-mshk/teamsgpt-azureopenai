@@ -37,10 +37,12 @@
 *Hints: You can accelerate the application process by using the Azure subscription under enterprise agreement. The App Service deployed with your free Azure subscription can send AOAI API to the granted AOAI resources that deployed with your enterprise Azure subscription.*
 
 ## Install Teams Toolkit
-- You can either use your favorite Dev IDE like Visual Studio Code or Visual Studio. Both of them support Teams Toolkit. If you prefer Javascipt programming, go for VSC whereas C# for VS. Check it out here for corresponding installation guides
+- You can either use your favorite Dev IDE like Visual Studio Code or Visual Studio. Both of them support Teams Toolkit. If you prefer Javascipt programming, go for VSC whereas C# for VS. Check it out over here for corresponding installation guides
   - [Visual Studio Code / Typescript](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/install-teams-toolkit?tabs=vscode&pivots=visual-studio-code#install-teams-toolkit-for-visual-studio)
   - [Visual Studio / C#](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/install-teams-toolkit?tabs=vscode&pivots=visual-studio#install-teams-toolkit-for-visual-studio)
- 
+- this repo\bot-sso uses Teams Toolkit Release version 4.2.4
+- If you installed Toolkit Release Preversion 4.99.2 (aka v5.0), please use another folder repo\bot-sso-v5 and refer to another [README-TeamsToolkitv5.md](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/README-TeamsToolkitv5.md) instead.
+
 *Hints: Javascript is preferred as AOAI API library only available with Python (Preview) and with Node.js ([from Github community](https://github.com/1openwindow/azure-openai-node)) at this moment (~March 2023)*
 
 ## Create a new Teams Project and start debugging in local environment
@@ -63,9 +65,14 @@
 6. A modal screen will be prompted to ask you to install your custom app like "xxxxxxxxxx-local-debug"
 ![debugmode](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/teamsgpt-dev-01.png)
 7. In the teams chat, you can try to send "welcome", "learn" to bot. This will invoke the pre-built logic of AdaptiveCards.
-- Check it out here for more details, [Designing Adaptive Cards for your Microsoft Teams app](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/design-effective-cards?tabs=design)
+- Check it out over here for more details, [Designing Adaptive Cards for your Microsoft Teams app](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/design-effective-cards?tabs=design)
 ![acard](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/adaptivecards.jpg)
 8. Right now, if everything on the right track, please stop the debugger to avoid any disruption made during app deployment.
+
+## Understanding Teams Toolkit local environment debugging lifecycle
+- For understanding more about the debugging lifecycle, please refer to [Teams Toolkit Visual Studio Code v5.0 Prerelease Guide](https://github.com/OfficeDev/TeamsFx/wiki/Teams-Toolkit-Visual-Studio-Code-v5.0-Prerelease-Guide)
+
+![tk5](https://user-images.githubusercontent.com/103554011/218403711-68502280-228d-43e5-afa1-e6d0c01712e5.png)
 
 ## Deploy to Azure Cloud
 - Provisioning and deploying your custom app to Azure is very easy things. Teams toolkit will do all the complicated things for you, what you need to do 
@@ -92,6 +99,8 @@
 3. You also can add your custom app in the left blade menu.
 ![addapp3](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/teamsgpt-selectcustomapp.png)
 4. Any message in this 1:1 chat window will be delivered to your bot without @mention, try to send a welcome.
+
+*Hints: Add apps" is not available for Guest user role, [check it out](https://support.microsoft.com/en-us/office/team-owner-member-and-guest-capabilities-in-teams-d03fdf5b-1a6e-48e4-8e07-b13e1350ec7b)*
 
 ## Testing: Tester, you and TeamsGPT bot
 - We will setup a TeamsGPT bot in the conversation chat window with others.
@@ -137,7 +146,7 @@ npm install azure-openai -save
     "version": "1.0.1",
 ```
 3. Replace your teamsBot.ts by this [teamsBot.ts](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/bot-sso/bot/teamsBot.ts) in this repo:main. This revised teamsBot.ts added a async API call to AOAI resource within OnMessage handler.
-    
+##### {projectfolder}\bot-sso\bot\teamsBot.ts 
 ```javascript
    //configure AOAI account key
     const { Configuration, OpenAIApi } = require("azure-openai");
@@ -187,7 +196,6 @@ npm install azure-openai -save
         }
       }      
 ```
-##### {projectfolder}\bot-sso\bot\teamsBot.ts 
 4. Add the following environmental parameters in 
 ##### {projectfolder}\bot-sso\bot\ .env.teamsfx.local
 ```javascript
@@ -239,3 +247,4 @@ CHATFPT_TEMPERATURE=0.7
 - [Get started for building and deploying customized apps for Microsoft Teams](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/teams-toolkit-fundamentals?pivots=visual-studio-code)
 - [Teams app capabilities and development tools](https://learn.microsoft.com/en-us/microsoftteams/platform/get-started/get-started-overview#app-capabilities-and-development-tools)
 - [Working with the ChatGPT and GPT-4 models (preview)](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/how-to/chatgpt?pivots=programming-language-chat-completions)
+- [Teams Toolkit Visual Studio Code v5.0 Prerelease Guide](https://github.com/OfficeDev/TeamsFx/wiki/Teams-Toolkit-Visual-Studio-Code-v5.0-Prerelease-Guide)

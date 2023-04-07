@@ -228,7 +228,7 @@ CHATFPT_TEMPERATURE=0.7
 
 ## Referenced Architecture for Production Platform
 ![refarch](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/refarch.png)
-- If your Proof of Concept/Point of View runs smoothly, it may be a good idea to set up a production platform for service deployment. Here is the reference architecture.
+- If your Proof of Concept/Point of Value runs smoothly, it may be a good idea to set up a production platform for service deployment. Here is the reference architecture.
   - **Public Endpoint Protection:** The Teams client sends messages over the public internet to your App Service. Utilizing FrontDoor or Application Gateway with Web Application Firewall can provide a high SLA to your service, protecting it from DDoS attacks. [DDoS Network Protection with PaaS web application architecture](https://learn.microsoft.com/en-us/azure/ddos-protection/ddos-protection-reference-architectures#ddos-network-protection-with-paas-web-application-architecture)
   - **Throttle Control:** Imagine what would happen if your users became addicted to this service. To protect your backend resources from spamming activities, API Management offers a [Rate limits and quotas policy](https://learn.microsoft.com/en-us/azure/api-management/api-management-sample-flexible-throttling#rate-limits-and-quotas).
   - **Chat Session:** Every single message sent from Teams client is stateless as well as the ChatGPT model API. Bot framework SDK offers waterfall dialogs to support a stateful conversation flow. Alternatively, using Azure Redis Cache for implementation brings more feasibility and control points to your custom app logic.

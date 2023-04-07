@@ -36,6 +36,9 @@
 
 *Hints: You can accelerate the application process by using the Azure subscription under enterprise agreement. The App Service deployed with your free Azure subscription can send AOAI API to the granted AOAI resources that deployed with your enterprise Azure subscription.*
 
+## TeamsGPT Components
+![components](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/teamsgpt-components.png)
+
 ## Install Teams Toolkit
 - You can either use your favorite Dev IDE like Visual Studio Code or Visual Studio. Both of them support Teams Toolkit. If you prefer Javascipt programming, go for VSC whereas C# for VS. Check it out over here for corresponding installation guides
   - [Visual Studio Code / Typescript](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/install-teams-toolkit?tabs=vscode&pivots=visual-studio-code#install-teams-toolkit-for-visual-studio)
@@ -228,9 +231,9 @@ CHATFPT_TEMPERATURE=0.7
 - If your Proof of Concept/Point of View runs smoothly, it may be a good idea to set up a production platform for service deployment. Here is the reference architecture.
   - **Public Endpoint Protection:** The Teams client sends messages over the public internet to your App Service. Utilizing FrontDoor or Application Gateway with Web Application Firewall can provide a high SLA to your service, protecting it from DDoS attacks. [DDoS Network Protection with PaaS web application architecture](https://learn.microsoft.com/en-us/azure/ddos-protection/ddos-protection-reference-architectures#ddos-network-protection-with-paas-web-application-architecture)
   - **Throttle Control:** Imagine what would happen if your users became addicted to this service. To protect your backend resources from spamming activities, API Management offers a [Rate limits and quotas policy](https://learn.microsoft.com/en-us/azure/api-management/api-management-sample-flexible-throttling#rate-limits-and-quotas).
-  - **Chat Session:** Every single message sent from Teams client is stateless as well as the ChatGPT model API. So, the backend service needs to have a chat session controlling logic to aggregate the previous messages that have been sent from Teams user to bot. Azure Redis Cache is good for this sake.
+  - **Chat Session:** Every single message sent from Teams client is stateless as well as the ChatGPT model API. Bot framework SDK offers waterfall dialogs to support a stateful conversation flow. Alternatively, using Azure Redis Cache for implementation brings more feasibility and control points to your custom app logic.
   - **Key and Secret Management:** The AOAI resource's KEY, endpoint and model name should not be stored in environmental variables, as this is not the best security practice. Instead, they should be stored in Azure Key Vault for better management of the application secret.
-  - **Sensitive Query Censorship:** The custom app workload pane can be used to perform sensitive data filtering, alerting, and monitoring. For example, App Service can query Microsoft Purview data catalog to determine if a user query is not compliant with enterprise IT policy, and then block the query instead. 
+  - **Sensitive Query Censorship:** The custom app workload pane can be used to perform sensitive data filtering, alert and monitoring and blocking. For example, App Service can query Microsoft Purview data catalog to get the definition of sensitive data, e,g. RegEx to determine if a user query is compliant with enterprise IT policy or not. 
   - **Networking Security:** By using VNET injection, App Gateway, APIM, App Service, and Redis can be protected within the confines of a VNET. Meanwhile, Purview, Bot service and AOAI can take advantage of VNET integration (privatelink) to ensure greater security compliance.
 
 ## Custom app logic To-Do List

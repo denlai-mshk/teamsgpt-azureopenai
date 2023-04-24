@@ -148,6 +148,19 @@ npm install azure-openai -save
 ```javascript
     "version": "1.0.1",
 ```
+*Hints: If you want to change the custom app name*
+##### {projectfolder}\bot-sso\.fx\configs\config.dev.json   << for cloud
+##### {projectfolder}\bot-sso\.fx\configs\config.local.json   << for debug
+```javascript
+    "manifest": {
+        "appName": {
+            "short": "yourcustomappname",
+            "full": "Full name for yourcustomapp"
+        }
+    }
+```
+*Hints: If you want to change the bot name shown in teams bubble message, please goto Azure > Azure bot service > bot profile > Display name*
+
 3. Replace your teamsBot.ts by this [teamsBot.ts](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/bot-sso/bot/teamsBot.ts) in this repo:main. This revised teamsBot.ts added a async API call to AOAI resource within OnMessage handler.
 ##### {projectfolder}\bot-sso\bot\teamsBot.ts 
 ```javascript

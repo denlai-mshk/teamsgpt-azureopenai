@@ -158,8 +158,8 @@ npm install azure-openai -save
         "full": "full description for sso-bot"
     },
 ```
-3. Replace your teamsBot.ts by this [teamsBot.ts](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/bot-sso/bot/teamsBot.ts) in this repo:main. This revised teamsBot.ts added a async API call to AOAI resource within OnMessage handler.
-##### {projectfolder}\bot-sso-v5\bot\teamsBot.ts 
+3. Replace your teamsBot.ts by this [teamsBot.ts](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/bot-sso-v5/teamsBot.ts) in this repo:main. This revised teamsBot.ts added a async API call to AOAI resource within OnMessage handler.
+##### {projectfolder}\bot-sso-v5\teamsBot.ts 
 ```javascript
 import { Configuration, OpenAIApi, ChatCompletionRequestMessageRoleEnum} from "azure-openai"; 
 ```
@@ -227,6 +227,8 @@ CHATGPT_TOPP=0.90
 CHATGPT_STOPSEQ=
 CHATFPT_TEMPERATURE=0.7
 ```
+If you don't see any .localSettings file, debug once (F5)  will auto generate this file.
+
 5. Save all, press F5 to start debugging your custom app. Right now, you will discover your bot became smarter to respond more than just *'learn', 'welcome' and 'show'*.
 6. Feel free to alter any *CHATGPT_XXXXXXX* environmental parameters to try out the differences of how the model reacts.
 

@@ -216,7 +216,7 @@ import { Configuration, OpenAIApi, ChatCompletionRequestMessageRoleEnum} from "a
          
 ```
 4. Add the following environmental parameters in 
-##### {projectfolder}\bot-sso-v5\.localSettings
+##### {projectfolder}\bot-sso-v5\ .localSettings
 ```javascript
 AOAI_APIKEY={your AOAI KEY}
 AOAI_ENDPOINT={your AOAI endpoint}

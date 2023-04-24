@@ -138,7 +138,7 @@
 
 ## Modify your custom app to send AOAI API to ChatGPT resources
 - First of all, Python is the one and only one supported AOAI library with PREVIEW agreement at this moment (~March 2023). As your custom app is bootstrapped by Teams toolkit project template that is written in Javascript. You can leverage the node.js version of AOAI API library that forked by community over here [azure-openai-node](https://github.com/1openwindow/azure-openai-node)
-1. Install the library in this path *{projectfolder}\bot-sso\bot*
+1. Install the library in this path *{projectfolder}\bot-sso-v5\*
 ```javascript
 npm install azure-openai -save
 ```

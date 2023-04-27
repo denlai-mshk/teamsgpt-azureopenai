@@ -48,6 +48,14 @@
 
 *Hints: Javascript is preferred as AOAI API library only available with Python (Preview) and with Node.js ([from Github community](https://github.com/1openwindow/azure-openai-node)) at this moment (~March 2023)*
 
+## Prerequisites for creating your Teams app
+1. Install required tools to build your Teams app
+2. Prepare Accounts to build your Teams app
+3. Sideload permission
+4. Verify sideloading permission
+
+- [Prepare all prerequisites](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/tools-prerequisites)
+
 ## Create a new Teams Project and start debugging in local environment
 1. In VSC, click the Teams Toolkit icon on the left blade menu, select "Create a new app" > "Start from a sample"
 2. Pick **"Bot App with SSO enabled"** as your template project and assign a new folder path

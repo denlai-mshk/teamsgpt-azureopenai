@@ -43,8 +43,8 @@
 - You can either use your favorite Dev IDE like Visual Studio Code or Visual Studio. Both of them support Teams Toolkit. If you prefer Javascipt programming, go for VSC whereas C# for VS. Check it out over here for corresponding installation guides
   - [Visual Studio Code / Typescript](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/install-teams-toolkit?tabs=vscode&pivots=visual-studio-code#install-teams-toolkit-for-visual-studio)
   - [Visual Studio / C#](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/install-teams-toolkit?tabs=vscode&pivots=visual-studio#install-teams-toolkit-for-visual-studio)
-- this repo\bot-sso-v5 uses Teams Toolkit PreRelease Version 4.99.2 (aka v5.0)
-- If you installed Toolkit Release version 4.2.4, please use another folder repo\bot-sso and refer to another [README.md](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/README.md) instead.
+- this repo\bot-sso uses Teams Toolkit Release version 4.2.4
+- If you installed Toolkit PreRelease version 4.99.2 (aka v5.0), please use another folder repo\bot-sso-v5 and refer to another [README.md](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/README.md) instead.
 
 *Hints: Javascript is preferred as AOAI API library only available with Python (Preview) and with Node.js ([from Github community](https://github.com/1openwindow/azure-openai-node)) at this moment (~March 2023)*
 
@@ -62,13 +62,13 @@
 ![ssosample](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/teamsgpt-dev-createnewapp.png)
 3. Sign in both M365 and Azure accounts
 ![singinkit](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/signin_teamstoolkit.png)
-- If no Azure subscription has been found after signing succeed, try to edit teamsapp.yml, fill in your *AZURE_SUBSCRIPTION_ID* and targeted *AZURE_RESOURCE_GROUP_NAME* and then try to sign in and sign off back and fore for a few times, or restart VSC.
-##### {projectfolder}\bot-sso-v5\teamsapp.yml
+- If no Azure subscription has been found after signing succeed, try to edit/create one subscriptionInfo.json, and then try to sign in and sign off back and fore for a few times.
+##### {projectfolder}\bot-sso\.fx\subscriptionInfo.json
 ```javascript
     {
-        with:
-            subscriptionId: ${{AZURE_SUBSCRIPTION_ID}} # The AZURE_SUBSCRIPTION_ID is a built-in environment variable. TeamsFx will ask you select one subscription if its value is empty. You're free to reference other environment varialbe here, but TeamsFx will not ask you to select subscription if it's empty in this case.
-            resourceGroupName: ${{AZURE_RESOURCE_GROUP_NAME}} # The AZURE_RESOURCE_GROUP_NAME is a built-in environment variable. TeamsFx will ask you to select or create one resource group if its value is empty. You're free to reference other environment varialbe here, but TeamsFx will not ask you to select or create resource grouop if it's empty in this case.
+      "subscriptionId": "{your azure subscription Id}",
+      "subscriptionName": "{your azure subscription name}",
+      "tenantId": "{your tenant Id}",
     }
 ```
 4. After the project created, press F5 to debug start this custom app without any code changes.
@@ -129,11 +129,12 @@
 - Teams toolkit help us to CI/CD our custom app to Azure cloud. Let's check what resources have been deployed.
 1. Sign in [Azure Portal](https://portal.azure.com/) with your free account.
 2. Locate the resource group you have named.
-![azureres](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/v5resourcegroup.png)
-3. 3 resources have been provisioned to support your custom app workload.
+![azureres](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/teamsgpt-azureresources.png)
+3. 4 resources have been provisioned to support your custom app workload.
    - Azure Bot service: This is the underlying infrastructure that used to support the Bot framework integrated with your custom app.
    - App Service plan: This is the underlying infrastructure that used to support your App Service.
    - App Service: This is logical app instance to support your custom app logic.
+   - Managed Identity:  This is used to associate with the App Service for IAM RABC permission.
 4. Later, we will go back to App Service to add some application parameters for AOAI.
 
 ## Deploy AOAI ChatGPT resources in Azure Cognitive Services
@@ -146,53 +147,49 @@
 
 ## Modify your custom app to send AOAI API to ChatGPT resources
 - First of all, Python is the one and only one supported AOAI library with PREVIEW agreement at this moment (~March 2023). As your custom app is bootstrapped by Teams toolkit project template that is written in Javascript. You can leverage the node.js version of AOAI API library that forked by community over here [azure-openai-node](https://github.com/1openwindow/azure-openai-node)
-1. Install the library in this path *{projectfolder}\bot-sso-v5\*
+1. Install the library in this path *{projectfolder}\bot-sso\bot*
 ```javascript
 npm install azure-openai -save
 ```
 2. Modify your custom app version is very important because the new version of custom app take times (~ few hours) to be reflected to Teams user in Teams App publishing workflow. An incremental versioning practice is recommended to make things clear. Try increment the "version":"1.0.0" to 1.0.1,
-##### {projectfolder}\bot-sso-v5\appPackage\manifest.json
+##### {projectfolder}\bot-sso\templates\appPackage\manifest.template.json
 ```javascript
     "version": "1.0.1",
 ```
 *Hints: If you want to change the custom app name*
+##### {projectfolder}\bot-sso\.fx\configs\config.dev.json   << for cloud
+##### {projectfolder}\bot-sso\.fx\configs\config.local.json   << for debug
 ```javascript
-    "name": {
-        "short": "yourcustomappname-${{TEAMSFX_ENV}}",
-        "full": "full name for yourcustomappname"
-    },
-    "description": {
-        "short": "short description for yourcustomappname",
-        "full": "full description for yourcustomappname"
-    },
+    "manifest": {
+        "appName": {
+            "short": "yourcustomappname",
+            "full": "Full name for yourcustomapp"
+        }
+    }
 ```
 *Hints: If you want to change the bot name shown in teams bubble message, please goto Azure > Azure bot service > bot profile > Display name*
 
-3. Replace your teamsBot.ts by this [teamsBot.ts](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/bot-sso-v5/teamsBot.ts) in this repo:main. This revised teamsBot.ts added a async API call to AOAI resource within OnMessage handler.
-##### {projectfolder}\bot-sso-v5\teamsBot.ts 
+3. Replace your teamsBot.ts by this [teamsBot.ts](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/bot-sso/bot/teamsBot.ts) in this repo:main. This revised teamsBot.ts added a async API call to AOAI resource within OnMessage handler.
+##### {projectfolder}\bot-sso\bot\teamsBot.ts 
 ```javascript
-import { Configuration, OpenAIApi, ChatCompletionRequestMessageRoleEnum} from "azure-openai"; 
-```
-```javascript
-
-    this.openAiApi = new OpenAIApi(
-      new Configuration({
+   //configure AOAI account key
+    const { Configuration, OpenAIApi } = require("azure-openai");
+    const configuration = new Configuration({
+      apiKey: process.env.AOAI_APIKEY,
+      azure: {
          apiKey: process.env.AOAI_APIKEY,
-         // add azure info into configuration
-         azure: {
-            apiKey: process.env.AOAI_APIKEY,
-            endpoint: process.env.AOAI_ENDPOINT,
-            // deploymentName is optional, if you donot set it, you need to set it in the request parameter
-            deploymentName: process.env.AOAI_MODEL,
-         }
-      }),
-    );
+         endpoint: process.env.AOAI_ENDPOINT,
+         deploymentName: process.env.AOAI_MODEL,
+      }
+    });
+    const openai = new OpenAIApi(configuration);
 
-  
+    //incoming message handler
     this.onMessage(async (context, next) => {
       console.log("Running with Message Activity.");
 
       let txt = context.activity.text;
+      console.log("Raw message: " + txt);
       // remove the mention of this bot
       const removedMentionText = TurnContext.removeRecipientMention(
         context.activity
@@ -202,11 +199,10 @@ import { Configuration, OpenAIApi, ChatCompletionRequestMessageRoleEnum} from "a
         txt = removedMentionText.toLowerCase().replace(/\n|\r/g, "").trim();
       }
 
-      let revisedprompt = [{role:ChatCompletionRequestMessageRoleEnum.System,content:process.env.CHATGPT_SYSTEMCONTENT},{role:ChatCompletionRequestMessageRoleEnum.User, content:txt}];
+      let revisedprompt = [{role:"system",content:process.env.CHATGPT_SYSTEMCONTENT},{role:"user", content:txt}];
       console.log("createChatCompletion request: " + JSON.stringify(revisedprompt));
       try {
-        const completion = await this.openAiApi.createChatCompletion({
-          model: process.env.AOAI_MODEL,
+        const completion = await openai.createChatCompletion({
           messages: revisedprompt,
           temperature: parseInt(process.env.CHATFPT_TEMPERATURE),
           max_tokens:parseInt(process.env.CHATGPT_MAXTOKEN),
@@ -222,11 +218,10 @@ import { Configuration, OpenAIApi, ChatCompletionRequestMessageRoleEnum} from "a
         } else {
           console.log(error.message);
         }
-      }
-         
+      }      
 ```
 4. Add the following environmental parameters in 
-##### {projectfolder}\bot-sso-v5\ .localSettings
+##### {projectfolder}\bot-sso\bot\ .env.teamsfx.local
 ```javascript
 AOAI_APIKEY={your AOAI KEY}
 AOAI_ENDPOINT={your AOAI endpoint}
@@ -237,8 +232,6 @@ CHATGPT_TOPP=0.90
 CHATGPT_STOPSEQ=
 CHATFPT_TEMPERATURE=0.7
 ```
-If you don't see any .localSettings file, debug once (F5)  will auto generate this file.
-
 5. Save all, press F5 to start debugging your custom app. Right now, you will discover your bot became smarter to respond more than just *'learn', 'welcome' and 'show'*.
 6. Feel free to alter any *CHATGPT_XXXXXXX* environmental parameters to try out the differences of how the model reacts.
 
@@ -269,15 +262,67 @@ If you don't see any .localSettings file, debug once (F5)  will auto generate th
 - To further enhance custom app capabilities, here are some to-do recommendations.
   - Using Adaptive Cards (Teams Toolkit) to add a button for regenerating the user's question with different model parameters.
   - Besides of using Redis to implement a stateful conversation, you can consider to adopt the out of box capability provided by [Bot Framework SDK](https://learn.microsoft.com/en-us/azure/bot-service/bot-builder-basics?view=azure-bot-service-4.0): [Waterfall dialogs](https://learn.microsoft.com/en-us/azure/bot-service/bot-builder-concept-waterfall-dialogs?view=azure-bot-service-4.0#waterfall-dialogs), which supports stateful complex conversation flow.
-![waterfall](https://learn.microsoft.com/en-us/azure/bot-service/v4sdk/media/bot-builder-dialog-concept.png)  
+![waterfall](https://learn.microsoft.com/en-us/azure/bot-service/v4sdk/media/bot-builder-dialog-concept.png)
   - Add command set to let power user
     - send query with specified model parameters like: max. token, temperature
     - summarizing document or text generation (*text-davinci-003*)
     - classify and translate the text (*text-embedding-ada-002*)
-   
+    
+
+## Add Application Gateway for public facing protection
+- In order to protect the public facing App Service. An Application Gateway with WAF (v2) is recommended to be deployed prior to App Service for public facing protection. 
+
+- Here are some prerequisites, please provision all of them before proceediong to next step
+  1. a VNET with 2 subnets, one for Application Gateway, another one for private endpoint
+  2. a Azure Key Vault with a self-sign certificate created for AppGw
+  3. a managed identity with Secret:Get/list, Certificate:Get/list/GetCA/listCA in AKV access policy
+
+  - If you don't have any Key Vault, please follow this guide to [create a new Key Vault](https://learn.microsoft.com/en-us/azure/key-vault/general/quick-create-portal)
+
+  - Please follow this guide to create a new managed identity to access your Key Vault, [Create Managed Identity for Key vault](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/qs-configure-portal-windows-vm#user-assigned-managed-identity). Remember to grant permission including
+    - Secret:Get/list
+    - Certificate:Get/list/GetCA/listCA
+  with your new created managed identity
+
+  - Please follow this guide to create a [self-signed certificate for Application gateway](https://learn.microsoft.com/en-us/azure/application-gateway/self-signed-certificates)
+
+- Here are the sub-steps
+  - Add Custom domain for your App Service
+    - Configure App Service with Application Gateway
+
+## Add Custom domain for your App Service
+- Before integrating AppGw with your App Service (Web app), please follow this guideline to prepare a custom domain name for your App Service
+  - If you want to use your own domain provider, click "Add custom domain" and select "All other domain services"
+    - [Use my own domain](https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain?tabs=root%2Cazurecli#1-configure-a-custom-domain)
+
+  - If you want to buy a App Service domain through Azure, click "Buy App Service domain" and fill in your targeted domain name for your App Service. After that, click "Add custom domain" and select "App Service Domain"
+    - [Buy App Service domain](https://learn.microsoft.com/en-us/azure/app-service/manage-custom-dns-buy-domain)
+
+## Prepare Certificate for Application Gateway
+  
+
+## Create Application Gateway
+- Please follow this guideline to create Application Gateway with WAF (v2) in your resource group. You may need to create a new VNET if you don't have any. Add a new frontend IP with it.
+  - [](https://learn.microsoft.com/en-us/azure/application-gateway/quick-create-portal#create-an-application-gateway)
+- For setting up the backend pools in details, please refer to the following steps which are dedicated for App Service integration.
+
+## Configure App Service with Application Gateway
+- We would like to recommend a production-grade approach that makes use of a custom domain on both Application Gateway and the App Service in the backend. This approach steamline the configuration and easy for trouble shooting.
+  - [customdomain](https://learn.microsoft.com/en-us/azure/application-gateway/media/configure-web-app/scenario-application-gateway-to-azure-app-service-custom-domain.png)
+
+  - Please follow this guideline [production-grade scenarios](https://learn.microsoft.com/en-us/azure/application-gateway/configure-web-app?tabs=customdomain%2Cazure-portal) to add App service as backend pool
+
+  - https://learn.microsoft.com/en-us/azure/application-gateway/configure-web-app?tabs=customdomain%2Cazure-portal#edit-http-settings-for-app-service
+
+## Fix 502 error for backend pool setting in  Application Gateway
+- By default, the app service expose its health status port with network interface 127.0.0.1 internally. This led to 502 error in AppGw because the backend pool health status has not been validated. To fix this, we need to create a custom health probe. Please follow this guide [to add a custom health probe](https://learn.microsoft.com/en-us/azure/application-gateway/application-gateway-create-probe-portal#create-probe-for-application-gateway-v2-sku)
+
+
 ## References
 - [Publish Teams apps using Teams Toolkit](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/publish)
 - [Get started for building and deploying customized apps for Microsoft Teams](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/teams-toolkit-fundamentals?pivots=visual-studio-code)
 - [Teams app capabilities and development tools](https://learn.microsoft.com/en-us/microsoftteams/platform/get-started/get-started-overview#app-capabilities-and-development-tools)
 - [Working with the ChatGPT and GPT-4 models (preview)](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/how-to/chatgpt?pivots=programming-language-chat-completions)
 - [Teams Toolkit Visual Studio Code v5.0 Prerelease Guide](https://github.com/OfficeDev/TeamsFx/wiki/Teams-Toolkit-Visual-Studio-Code-v5.0-Prerelease-Guide)
+
+

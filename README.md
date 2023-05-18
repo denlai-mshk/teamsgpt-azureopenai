@@ -44,7 +44,7 @@
   - [Visual Studio Code / Typescript](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/install-teams-toolkit?tabs=vscode&pivots=visual-studio-code#install-teams-toolkit-for-visual-studio)
   - [Visual Studio / C#](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/install-teams-toolkit?tabs=vscode&pivots=visual-studio#install-teams-toolkit-for-visual-studio)
 - this repo\bot-sso-v5 uses Teams Toolkit PreRelease Version 4.99.2 (aka v5.0)
-- If you installed Toolkit Release version 4.2.4, please use another folder repo\bot-sso and refer to another [README-TeamsToolkit_v4.2.md](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/README-TeamsToolkit_v4.2.md) instead.
+- If you installed Toolkit Release version 4.2.4, please use another folder repo\bot-sso and refer to another [README-TeamsToolkit_v4.2.md](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/README-TeamsToolkit_v4_2.md) instead.
 
 *Hints: Javascript is preferred as AOAI API library only available with Python (Preview) and with Node.js ([from Github community](https://github.com/1openwindow/azure-openai-node)) at this moment (~March 2023)*
 

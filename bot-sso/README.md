@@ -6,7 +6,7 @@ This is a sample chatbot application demonstrating Single Sign-on using `botbuil
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/en/), supported versions: 14, 16, 18
+- [Node.js](https://nodejs.org/), supported versions: 14, 16, 18
 - A Microsoft 365 account. If you do not have Microsoft 365 account, apply one from [Microsoft 365 developer program](https://developer.microsoft.com/en-us/microsoft-365/dev-program)
 - [Teams Toolkit Visual Studio Code Extension](https://aka.ms/teams-toolkit) or [TeamsFx CLI](https://aka.ms/teamsfx-cli)
 
@@ -31,7 +31,7 @@ If you encounter the ngrok page below when sending the `show` command to the bot
 
 ## Edit the manifest
 
-You can find the Teams manifest in `templates/appPackage/manifest.template.json`. It contains template arguments with `{...}` statements which will be replaced at build time. You may add any extra properties or permissions you require to this file. See the [schema reference](https://docs.microsoft.com/en-us/microsoftteams/platform/resources/schema/manifest-schema) for more.
+You can find the Teams manifest in `templates/appPackage/manifest.json`. It contains template arguments with `{...}` statements which will be replaced at build time. You may add any extra properties or permissions you require to this file. See the [schema reference](https://docs.microsoft.com/en-us/microsoftteams/platform/resources/schema/manifest-schema) for more.
 
 ## Deploy to Azure
 

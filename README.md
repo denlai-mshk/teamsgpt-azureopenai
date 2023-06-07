@@ -1,5 +1,5 @@
-## Integrating ChatGPT with Microsoft Teams
-- Wouldn't it be great if you and your teammates could easily send questions to ChatGPT in Microsoft Teams group chats or meetings? This guide will show you how to integrate Microsoft Teams with the Azure OpenAI platform in just a few steps. By taking advantage of a Microsoft 365 developer platform membership and an Azure free subscription, you can create a sandbox environment specifically for this proof of concept.
+# Integrating ChatGPT with Microsoft Teams
+Wouldn't it be great if you and your teammates could easily send questions to ChatGPT in Microsoft Teams group chats or meetings? This guide will show you how to integrate Microsoft Teams with the Azure OpenAI platform in just a few steps. By taking advantage of a Microsoft 365 developer platform membership and an Azure free subscription, you can create a sandbox environment specifically for this proof of concept.
 
 ![intro](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/teamsgpt-overview-small.png)
 
@@ -39,14 +39,20 @@
 ## TeamsGPT Components
 ![components](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/teamsgpt-components.png)
 
-## Install Teams Toolkit
+## Install Teams Toolkit v5.0 Release
 - You can either use your favorite Dev IDE like Visual Studio Code or Visual Studio. Both of them support Teams Toolkit. If you prefer Javascipt programming, go for VSC whereas C# for VS. Check it out over here for corresponding installation guides
   - [Visual Studio Code / Typescript](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/install-teams-toolkit?tabs=vscode&pivots=visual-studio-code#install-teams-toolkit-for-visual-studio)
   - [Visual Studio / C#](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/install-teams-toolkit?tabs=vscode&pivots=visual-studio#install-teams-toolkit-for-visual-studio)
-- this repo\bot-sso-v5 uses Teams Toolkit PreRelease Version 4.99.2 (aka v5.0)
-- If you installed Toolkit Release version 4.2.4, please use another folder repo\bot-sso and refer to another [README-TeamsToolkit_v4.2.md](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/README-TeamsToolkit_v4_2.md) instead.
+- this repo\bot-sso uses Teams Toolkit Release Version v5.0  *(~May 2023)*
 
 *Hints: Javascript is preferred as AOAI API library only available with Python (Preview) and with Node.js ([from Github community](https://github.com/1openwindow/azure-openai-node)) at this moment (~March 2023)*
+
+## Teams Toolkit learning references
+- [How to add app settings to bot / message extension hosted on Azure Web App](https://github.com/OfficeDev/TeamsFx/wiki/Add-app-settings#add-app-settings-to-bot--messaging-extension-hosted-by-azure-web-app)
+- [How to add app settings to api hosted on Azure Functions](https://github.com/OfficeDev/TeamsFx/wiki/Add-app-settings#add-app-settings-to-api-hosted-by-azure-functions)
+- [How to add app settings for local debugging](https://github.com/OfficeDev/TeamsFx/wiki/Add-app-settings#add-app-setting-for-local-debugging)
+- [How to find app settings predefined by Teams Toolkit](https://github.com/OfficeDev/TeamsFx/wiki/Add-app-settings#app-settings-predefined-by-teams-toolkit)
+- [Understand how Teams Toolkit handles app setting for you](https://github.com/OfficeDev/TeamsFx/wiki/Add-app-settings#how-teams-toolkit-handles-app-setting-for-you)
 
 ## Prerequisites for creating your Teams app
 1. Install required tools to build your Teams app
@@ -63,7 +69,7 @@
 3. Sign in both M365 and Azure accounts
 ![singinkit](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/screenshots/signin_teamstoolkit.png)
 - If no Azure subscription has been found after signing succeed, try to edit teamsapp.yml, fill in your *AZURE_SUBSCRIPTION_ID* and targeted *AZURE_RESOURCE_GROUP_NAME* and then try to sign in and sign off back and fore for a few times, or restart VSC.
-##### {projectfolder}\bot-sso-v5\teamsapp.yml
+##### {projectfolder}\bot-sso\teamsapp.yml
 ```javascript
     {
         with:
@@ -81,7 +87,7 @@
 8. Right now, if everything on the right track, please stop the debugger to avoid any disruption made during app deployment.
 
 ## Understanding Teams Toolkit local environment debugging lifecycle
-- For understanding more about the debugging lifecycle, please refer to [Teams Toolkit Visual Studio Code v5.0 Prerelease Guide](https://github.com/OfficeDev/TeamsFx/wiki/Teams-Toolkit-Visual-Studio-Code-v5.0-Prerelease-Guide)
+- For understanding more about the debugging lifecycle, please refer to [Debugging Microsoft Teams app locally with Teams Toolkit](https://devblogs.microsoft.com/microsoft365dev/debugging-microsoft-teams-app-locally-with-teams-toolkit/)
 
 ![tk5](https://user-images.githubusercontent.com/103554011/218403711-68502280-228d-43e5-afa1-e6d0c01712e5.png)
 
@@ -146,12 +152,12 @@
 
 ## Modify your custom app to send AOAI API to ChatGPT resources
 - First of all, Python is the one and only one supported AOAI library with PREVIEW agreement at this moment (~March 2023). As your custom app is bootstrapped by Teams toolkit project template that is written in Javascript. You can leverage the node.js version of AOAI API library that forked by community over here [azure-openai-node](https://github.com/1openwindow/azure-openai-node)
-1. Install the library in this path *{projectfolder}\bot-sso-v5\*
+1. Install the library in this path *{projectfolder}\bot-sso\*
 ```javascript
 npm install azure-openai -save
 ```
 2. Modify your custom app version is very important because the new version of custom app take times (~ few hours) to be reflected to Teams user in Teams App publishing workflow. An incremental versioning practice is recommended to make things clear. Try increment the "version":"1.0.0" to 1.0.1,
-##### {projectfolder}\bot-sso-v5\appPackage\manifest.json
+##### {projectfolder}\bot-sso\appPackage\manifest.json
 ```javascript
     "version": "1.0.1",
 ```
@@ -168,8 +174,8 @@ npm install azure-openai -save
 ```
 *Hints: If you want to change the bot name shown in teams bubble message, please goto Azure > Azure bot service > bot profile > Display name*
 
-3. Replace your teamsBot.ts by this [teamsBot.ts](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/bot-sso-v5/teamsBot.ts) in this repo:main. This revised teamsBot.ts added a async API call to AOAI resource within OnMessage handler.
-##### {projectfolder}\bot-sso-v5\teamsBot.ts 
+3. Replace your teamsBot.ts by this [teamsBot.ts](https://github.com/denlai-mshk/teamsgpt-azureopenai/blob/main/bot-sso/teamsBot.ts) in this repo:main. This revised teamsBot.ts added a async API call to AOAI resource within OnMessage handler.
+##### {projectfolder}\bot-sso\teamsBot.ts 
 ```javascript
 import { Configuration, OpenAIApi, ChatCompletionRequestMessageRoleEnum} from "azure-openai"; 
 ```
@@ -226,7 +232,7 @@ import { Configuration, OpenAIApi, ChatCompletionRequestMessageRoleEnum} from "a
          
 ```
 4. Add the following environmental parameters in 
-##### {projectfolder}\bot-sso-v5\ .localSettings
+##### {projectfolder}\bot-sso\ .localSettings
 ```javascript
 AOAI_APIKEY={your AOAI KEY}
 AOAI_ENDPOINT={your AOAI endpoint}
@@ -280,4 +286,6 @@ If you don't see any .localSettings file, debug once (F5)  will auto generate th
 - [Get started for building and deploying customized apps for Microsoft Teams](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/teams-toolkit-fundamentals?pivots=visual-studio-code)
 - [Teams app capabilities and development tools](https://learn.microsoft.com/en-us/microsoftteams/platform/get-started/get-started-overview#app-capabilities-and-development-tools)
 - [Working with the ChatGPT and GPT-4 models (preview)](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/how-to/chatgpt?pivots=programming-language-chat-completions)
-- [Teams Toolkit Visual Studio Code v5.0 Prerelease Guide](https://github.com/OfficeDev/TeamsFx/wiki/Teams-Toolkit-Visual-Studio-Code-v5.0-Prerelease-Guide)
+- [Teams Toolkit for Visual Studio Code 5 now available](https://devblogs.microsoft.com/microsoft365dev/teams-toolkit-for-visual-studio-code-v5-0-now-available/)
+- [Teams Toolkit Wiki](https://github.com/OfficeDev/TeamsFx/wiki)
+

@@ -12,6 +12,7 @@ import {
 import { Utils } from "./helpers/utils";
 import { SSODialog } from "./helpers/ssoDialog";
 import { CommandsHelper } from "./helpers/commandHelper";
+import { Configuration, OpenAIApi, ChatCompletionRequestMessageRoleEnum} from "azure-openai"; 
 const rawWelcomeCard = require("./adaptiveCards/welcome.json");
 const rawLearnCard = require("./adaptiveCards/learn.json");
 
@@ -22,6 +23,7 @@ export class TeamsBot extends TeamsActivityHandler {
   dialog: SSODialog;
   dialogState: any;
   commandsHelper: CommandsHelper;
+  openAiApi: OpenAIApi;
 
   constructor() {
     super();
@@ -40,6 +42,19 @@ export class TeamsBot extends TeamsActivityHandler {
     this.dialog = new SSODialog(new MemoryStorage());
     this.dialogState = this.conversationState.createProperty("DialogState");
 
+    this.openAiApi = new OpenAIApi(
+      new Configuration({
+         apiKey: process.env.AOAI_APIKEY,
+         // add azure info into configuration
+         azure: {
+            apiKey: process.env.AOAI_APIKEY,
+            endpoint: process.env.AOAI_ENDPOINT,
+            // deploymentName is optional, if you donot set it, you need to set it in the request parameter
+            deploymentName: process.env.AOAI_MODEL,
+         }
+      }),
+    );
+
     this.onMessage(async (context, next) => {
       console.log("Running with Message Activity.");
 
@@ -53,6 +68,28 @@ export class TeamsBot extends TeamsActivityHandler {
         txt = removedMentionText.toLowerCase().replace(/\n|\r/g, "").trim();
       }
 
+      let revisedprompt = [{role:ChatCompletionRequestMessageRoleEnum.System,content:process.env.CHATGPT_SYSTEMCONTENT},{role:ChatCompletionRequestMessageRoleEnum.User, content:txt}];
+      console.log("createChatCompletion request: " + JSON.stringify(revisedprompt));
+      try {
+        const completion = await this.openAiApi.createChatCompletion({
+          model: process.env.AOAI_MODEL,
+          messages: revisedprompt,
+          temperature: parseInt(process.env.CHATFPT_TEMPERATURE),
+          max_tokens:parseInt(process.env.CHATGPT_MAXTOKEN),
+          top_p: parseInt(process.env.CHATGPT_TOPP),
+          stop: process.env.CHATGPT_STOPSEQ
+        });
+        console.log("createChatCompletion response: " + completion.data.choices[0].message.content);
+        await context.sendActivity(completion.data.choices[0].message.content);
+      } catch (error) {
+        if (error.response) {
+          console.log(error.response.status);
+          console.log(error.response.data);
+        } else {
+          console.log(error.message);
+        }
+      }
+            
       // Trigger command by IM text
       await CommandsHelper.triggerCommand(txt, {
         context: context,

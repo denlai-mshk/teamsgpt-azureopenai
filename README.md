@@ -47,13 +47,6 @@ Wouldn't it be great if you and your teammates could easily send questions to Ch
 
 *Hints: Javascript is preferred as AOAI API library only available with Python (Preview) and with Node.js ([from Github community](https://github.com/1openwindow/azure-openai-node)) at this moment (~March 2023)*
 
-## Teams Toolkit learning references
-- [How to add app settings to bot / message extension hosted on Azure Web App](https://github.com/OfficeDev/TeamsFx/wiki/Add-app-settings#add-app-settings-to-bot--messaging-extension-hosted-by-azure-web-app)
-- [How to add app settings to api hosted on Azure Functions](https://github.com/OfficeDev/TeamsFx/wiki/Add-app-settings#add-app-settings-to-api-hosted-by-azure-functions)
-- [How to add app settings for local debugging](https://github.com/OfficeDev/TeamsFx/wiki/Add-app-settings#add-app-setting-for-local-debugging)
-- [How to find app settings predefined by Teams Toolkit](https://github.com/OfficeDev/TeamsFx/wiki/Add-app-settings#app-settings-predefined-by-teams-toolkit)
-- [Understand how Teams Toolkit handles app setting for you](https://github.com/OfficeDev/TeamsFx/wiki/Add-app-settings#how-teams-toolkit-handles-app-setting-for-you)
-
 ## Prerequisites for creating your Teams app
 1. Install required tools to build your Teams app
 2. Prepare Accounts to build your Teams app
@@ -90,6 +83,13 @@ Wouldn't it be great if you and your teammates could easily send questions to Ch
 - For understanding more about the debugging lifecycle, please refer to [Debugging Microsoft Teams app locally with Teams Toolkit](https://devblogs.microsoft.com/microsoft365dev/debugging-microsoft-teams-app-locally-with-teams-toolkit/)
 
 ![tk5](https://user-images.githubusercontent.com/103554011/218403711-68502280-228d-43e5-afa1-e6d0c01712e5.png)
+
+## Teams Toolkit learning references
+- [How to add app settings to bot / message extension hosted on Azure Web App](https://github.com/OfficeDev/TeamsFx/wiki/Add-app-settings#add-app-settings-to-bot--messaging-extension-hosted-by-azure-web-app)
+- [How to add app settings to api hosted on Azure Functions](https://github.com/OfficeDev/TeamsFx/wiki/Add-app-settings#add-app-settings-to-api-hosted-by-azure-functions)
+- [How to add app settings for local debugging](https://github.com/OfficeDev/TeamsFx/wiki/Add-app-settings#add-app-setting-for-local-debugging)
+- [How to find app settings predefined by Teams Toolkit](https://github.com/OfficeDev/TeamsFx/wiki/Add-app-settings#app-settings-predefined-by-teams-toolkit)
+- [Understand how Teams Toolkit handles app setting for you](https://github.com/OfficeDev/TeamsFx/wiki/Add-app-settings#how-teams-toolkit-handles-app-setting-for-you)
 
 ## Deploy to Azure Cloud
 - Provisioning and deploying your custom app to Azure is very easy things. Teams toolkit will do all the complicated things for you, what you need to do 

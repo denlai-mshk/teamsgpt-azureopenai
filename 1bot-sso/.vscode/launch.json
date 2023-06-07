@@ -3,9 +3,9 @@
     "configurations": [
         {
             "name": "Launch Remote (Edge)",
-            "type": "msedge",
+            "type": "pwa-msedge",
             "request": "launch",
-            "url": "https://teams.microsoft.com/l/app/${{TEAMS_APP_ID}}?installAppPackage=true&webjoin=true&${account-hint}",
+            "url": "https://teams.microsoft.com/l/app/${dev:teamsAppId}?installAppPackage=true&webjoin=true&${account-hint}",
             "presentation": {
                 "group": "remote",
                 "order": 1
@@ -14,9 +14,9 @@
         },
         {
             "name": "Launch Remote (Chrome)",
-            "type": "chrome",
+            "type": "pwa-chrome",
             "request": "launch",
-            "url": "https://teams.microsoft.com/l/app/${{TEAMS_APP_ID}}?installAppPackage=true&webjoin=true&${account-hint}",
+            "url": "https://teams.microsoft.com/l/app/${dev:teamsAppId}?installAppPackage=true&webjoin=true&${account-hint}",
             "presentation": {
                 "group": "remote",
                 "order": 2
@@ -24,12 +24,12 @@
             "internalConsoleOptions": "neverOpen"
         },
         {
-            "name": "Launch App (Edge)",
-            "type": "msedge",
+            "name": "Launch Bot (Edge)",
+            "type": "pwa-msedge",
             "request": "launch",
-            "url": "https://teams.microsoft.com/l/app/${{local:TEAMS_APP_ID}}?installAppPackage=true&webjoin=true&${account-hint}",
+            "url": "https://teams.microsoft.com/l/app/${local:teamsAppId}?installAppPackage=true&webjoin=true&${account-hint}",
             "cascadeTerminateToConfigurations": [
-                "Attach to Local Service"
+                "Attach to Bot"
             ],
             "presentation": {
                 "group": "all",
@@ -38,12 +38,12 @@
             "internalConsoleOptions": "neverOpen"
         },
         {
-            "name": "Launch App (Chrome)",
-            "type": "chrome",
+            "name": "Launch Bot (Chrome)",
+            "type": "pwa-chrome",
             "request": "launch",
-            "url": "https://teams.microsoft.com/l/app/${{local:TEAMS_APP_ID}}?installAppPackage=true&webjoin=true&${account-hint}",
+            "url": "https://teams.microsoft.com/l/app/${local:teamsAppId}?installAppPackage=true&webjoin=true&${account-hint}",
             "cascadeTerminateToConfigurations": [
-                "Attach to Local Service"
+                "Attach to Bot"
             ],
             "presentation": {
                 "group": "all",
@@ -52,8 +52,8 @@
             "internalConsoleOptions": "neverOpen"
         },
         {
-            "name": "Attach to Local Service",
-            "type": "node",
+            "name": "Attach to Bot",
+            "type": "pwa-node",
             "request": "attach",
             "port": 9239,
             "restart": true,
@@ -68,8 +68,8 @@
         {
             "name": "Debug (Edge)",
             "configurations": [
-                "Launch App (Edge)",
-                "Attach to Local Service"
+                "Launch Bot (Edge)",
+                "Attach to Bot"
             ],
             "preLaunchTask": "Start Teams App Locally",
             "presentation": {
@@ -81,8 +81,8 @@
         {
             "name": "Debug (Chrome)",
             "configurations": [
-                "Launch App (Chrome)",
-                "Attach to Local Service"
+                "Launch Bot (Chrome)",
+                "Attach to Bot"
             ],
             "preLaunchTask": "Start Teams App Locally",
             "presentation": {

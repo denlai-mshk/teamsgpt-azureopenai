@@ -1,15 +1,42 @@
+# yaml-language-server: $schema=https://aka.ms/teams-toolkit/1.0.0/yaml.schema.json
 version: 1.0.0
 
 environmentFolderPath: ./env
 
 provision:
-
-  - uses: botAadApp/create # Creates a new AAD app for Bot Registration.
+  - uses: aadApp/create # Creates a new Azure Active Directory (AAD) app to authenticate users if the environment variable that stores clientId is empty
     with:
-      name: sso-bot-aad
-    # Output: following environment variable will be persisted in current environment's .env file.
-    # BOT_ID: the AAD app client id created for Bot Registration.
-    # SECRET_BOT_PASSWORD: the AAD app client secret created for Bot Registration.
+      name: sso-bot-aad # Note: when you run aadApp/update, the AAD app name will be updated based on the definition in manifest. If you don't want to change the name, make sure the name in AAD manifest is the same with the name defined here.
+      generateClientSecret: true # If the value is false, the action will not generate client secret for you
+      signInAudience: "AzureADMyOrg" # Authenticate users with a Microsoft work or school account in your organization's Azure AD tenant (for example, single tenant).
+    writeToEnvironmentFile:
+      # Write the information of created resources into environment file for the specified environment variable(s).
+      clientId: AAD_APP_CLIENT_ID
+      clientSecret: SECRET_AAD_APP_CLIENT_SECRET # Environment variable that starts with `SECRET_` will be stored to the .env.{envName}.user environment file
+      objectId: AAD_APP_OBJECT_ID
+      tenantId: AAD_APP_TENANT_ID
+      authority: AAD_APP_OAUTH_AUTHORITY
+      authorityHost: AAD_APP_OAUTH_AUTHORITY_HOST
+  # Creates a Teams app
+  - uses: teamsApp/create
+    with:
+      # Teams app name
+      name: sso-bot-${{TEAMSFX_ENV}}
+    # Write the information of created resources into environment file for
+    # the specified environment variable(s).
+    writeToEnvironmentFile:
+      teamsAppId: TEAMS_APP_ID
+
+  # Create or reuse an existing Azure Active Directory application for bot.
+  - uses: botAadApp/create
+    with:
+      # The Azure Active Directory application's display name
+      name: sso-bot-${{TEAMSFX_ENV}}
+    writeToEnvironmentFile:
+      # The Azure Active Directory application's client id created for bot.
+      botId: BOT_ID
+      # The Azure Active Directory application's client secret created for bot.
+      botPassword: SECRET_BOT_PASSWORD
 
   - uses: arm/deploy # Deploy given ARM templates parallelly.
     with:
@@ -20,77 +47,88 @@ provision:
           parameters: ./infra/azure.parameters.json
           deploymentName: Create-resources-for-bot
       bicepCliVersion: v0.9.1 # Teams Toolkit will download this bicep CLI version from github for you, will use bicep CLI in PATH if you remove this config.
-    # Output: every bicep output will be persisted in current environment's .env file with certain naming conversion. Refer https://aka.ms/teamsfx-provision-arm#output for more details on the naming conversion rule.
+
+  - uses: aadApp/update # Apply the AAD manifest to an existing AAD app. Will use the object id in manifest file to determine which AAD app to update.
+    with:
+      manifestPath: ./aad.manifest.json # Relative path to teamsfx folder. Environment variables in manifest will be replaced before apply to AAD app
+      outputFilePath: ./build/aad.manifest.${{TEAMSFX_ENV}}.json
+
+  # Validate using manifest schema
+  - uses: teamsApp/validateManifest
+    with:
+      # Path to manifest template
+      manifestPath: ./appPackage/manifest.json
+  # Build Teams app package with latest env value
+  - uses: teamsApp/zipAppPackage
+    with:
+      # Path to manifest template
+      manifestPath: ./appPackage/manifest.json
+      outputZipPath: ./appPackage/build/appPackage.${{TEAMSFX_ENV}}.zip
+      outputJsonPath: ./appPackage/build/manifest.${{TEAMSFX_ENV}}.json
+  # Validate app package using validation rules
+  - uses: teamsApp/validateAppPackage
+    with:
+      # Relative path to this file. This is the path for built zip file.
+      appPackagePath: ./appPackage/build/appPackage.${{TEAMSFX_ENV}}.zip
+  # Apply the Teams app manifest to an existing Teams app in
+  # Teams Developer Portal.
+  # Will use the app id in manifest file to determine which Teams app to update.
+  - uses: teamsApp/update
+    with:
+      # Relative path to teamsfx folder. This is the path for built zip file.
+      appPackagePath: ./appPackage/build/appPackage.${{TEAMSFX_ENV}}.zip
 
 deploy:
-  - uses: cli/runNpmCommand # Run npm command
+  # Run npm command
+  - uses: cli/runNpmCommand
     with:
       args: install
   - uses: cli/runNpmCommand
     with:
       args: run build --if-present
-  - uses: azureAppService/deploy # Deploy bits to Azure App Serivce
+  # Deploy your application to Azure App Service using the zip deploy feature.
+  # For additional details, refer to https://aka.ms/zip-deploy-to-app-services.
+  - uses: azureAppService/zipDeploy
     with:
-      distributionPath: . # Deploy base folder
-      ignoreFile: ./.webappignore # Can be changed to any ignore file location, leave blank will ignore nothing
-      resourceId: ${{BOT_AZURE_APP_SERVICE_RESOURCE_ID}} # The resource id of the cloud resource to be deployed to
-
-registerApp:
-  - uses: aadApp/create # Creates a new AAD app to authenticate users if AAD_APP_CLIENT_ID environment variable is empty
-    with:
-      name: sso-bot-aad # Note: when you run configure/aadApp, the AAD app name will be updated based on the definition of manifest. If you don't want to change the name, ensure the name in AAD manifest is same with the name defined here.
-      generateClientSecret: true # If the value is false, the action will not generate client secret for you
-      # Output: following environment variable will be persisted in current environment's .env file.
-      # AAD_APP_CLIENT_ID: the client id of AAD app
-      # AAD_APP_CLIENT_SECRET: the client secret of AAD app
-      # AAD_APP_OBJECT_ID: the object id of AAD app
-      # AAD_APP_TENANT_ID: the tenant id of AAD app
-      # AAD_APP_OAUTH_AUTHORITY_HOST: the host of OAUTH authority of AAD app
-      # AAD_APP_OAUTH_AUTHORITY: the OAUTH authority of AAD app
-  - uses: teamsApp/create # Creates a Teams app
-    with:
-      name: sso-bot-${{TEAMSFX_ENV}} # Teams app name
-    # Output: following environment variable will be persisted in current environment's .env file.
-    # TEAMS_APP_ID: the id of Teams app
-
-configureApp:
-  - uses: aadApp/update # Apply the AAD manifest to an existing AAD app. Will use the object id in manifest file to determine which AAD app to update.
-    with:
-      manifestPath: ./aad.manifest.json # Relative path to teamsfx folder. Environment variables in manifest will be replaced before apply to AAD app
-      outputFilePath: ./build/aad.manifest.${{TEAMSFX_ENV}}.json
-  # Output: following environment variable will be persisted in current environment's .env file.
-  # AAD_APP_ACCESS_AS_USER_PERMISSION_ID: the id of access_as_user permission which is used to enable SSO
-  - uses: teamsApp/validate
-    with:
-      manifestPath: ./appPackage/manifest.json # Path to manifest template
-  - uses: teamsApp/zipAppPackage # Build Teams app package with latest env value
-    with:
-      manifestPath: ./appPackage/manifest.json # Path to manifest template
-      outputZipPath: ./build/appPackage/appPackage.${{TEAMSFX_ENV}}.zip
-      outputJsonPath: ./build/appPackage/manifest.${{TEAMSFX_ENV}}.json
-  - uses: teamsApp/update # Apply the Teams app manifest to an existing Teams app in Teams Developer Portal. Will use the app id in manifest file to determine which Teams app to update.
-    with:
-      appPackagePath: ./build/appPackage/appPackage.${{TEAMSFX_ENV}}.zip # Relative path to teamsfx folder. This is the path for built zip file.
-    # Output: following environment variable will be persisted in current environment's .env file.
-    # TEAMS_APP_ID: the id of Teams app
+      # Deploy base folder
+      artifactFolder: .
+      # Ignore file location, leave blank will ignore nothing
+      ignoreFile: .webappignore
+      # The resource id of the cloud resource to be deployed to
+      resourceId: ${{BOT_AZURE_APP_SERVICE_RESOURCE_ID}}
 
 publish:
-  - uses: teamsApp/validate
+  # Validate using manifest schema
+  - uses: teamsApp/validateManifest
     with:
-      manifestPath: ./appPackage/manifest.json # Path to manifest template
+      # Path to manifest template
+      manifestPath: ./appPackage/manifest.json
   - uses: teamsApp/zipAppPackage
     with:
-      manifestPath: ./appPackage/manifest.json # Path to manifest template
-      outputZipPath: ./build/appPackage/appPackage.${{TEAMSFX_ENV}}.zip
-      outputJsonPath: ./build/appPackage/manifest.${{TEAMSFX_ENV}}.json
-  - uses: teamsApp/update # Apply the Teams app manifest to an existing Teams app in Teams Developer Portal. Will use the app id in manifest file to determine which Teams app to update.
+      # Path to manifest template
+      manifestPath: ./appPackage/manifest.json
+      outputZipPath: ./appPackage/build/appPackage.${{TEAMSFX_ENV}}.zip
+      outputJsonPath: ./appPackage/build/manifest.${{TEAMSFX_ENV}}.json
+  # Validate app package using validation rules
+  - uses: teamsApp/validateAppPackage
     with:
-      appPackagePath: ./build/appPackage/appPackage.${{TEAMSFX_ENV}}.zip # Relative path to this file. This is the path for built zip file.
-    # Output: following environment variable will be persisted in current environment's .env file.
-    # TEAMS_APP_ID: the id of Teams app
-  - uses: teamsApp/publishAppPackage # Publish the app to Teams Admin Center (https://admin.teams.microsoft.com/policies/manage-apps) for review and approval
+      # Relative path to this file. This is the path for built zip file.
+      appPackagePath: ./appPackage/build/appPackage.${{TEAMSFX_ENV}}.zip
+  # Apply the Teams app manifest to an existing Teams app in
+  # Teams Developer Portal.
+  # Will use the app id in manifest file to determine which Teams app to update.
+  - uses: teamsApp/update
     with:
-      appPackagePath: ./build/appPackage/appPackage.${{TEAMSFX_ENV}}.zip
-  # Output: following environment variable will be persisted in current environment's .env file.
-  # TEAMS_APP_PUBLISHED_APP_ID: app id in Teams tenant app catalog.
-projectId: ce24daa4-37d6-4e2e-95da-967304686dc3
+      # Relative path to this file. This is the path for built zip file.
+      appPackagePath: ./appPackage/build/appPackage.${{TEAMSFX_ENV}}.zip
+  # Publish the app to
+  # Teams Admin Center (https://admin.teams.microsoft.com/policies/manage-apps)
+  # for review and approval
+  - uses: teamsApp/publishAppPackage
+    with:
+      appPackagePath: ./appPackage/build/appPackage.${{TEAMSFX_ENV}}.zip
+    # Write the information of created resources into environment file for
+    # the specified environment variable(s).
+    writeToEnvironmentFile:
+      publishedAppId: TEAMS_APP_PUBLISHED_APP_ID
+projectId: 1b6a3763-7664-4290-805a-3faa23d2a9f7

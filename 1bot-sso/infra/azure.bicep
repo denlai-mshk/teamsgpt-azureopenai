@@ -50,8 +50,8 @@ resource webApp 'Microsoft.Web/sites@2021-02-01' = {
           value: '~18' // Set NodeJS version to 18.x for your site
         }
         {
-          name: 'WEBSITE_RUN_FROM_PACKAGE'
-          value: '1'
+          name: 'SCM_SCRIPT_GENERATOR_ARGS'
+          value: '--node' // Register as node server
         }
         {
           name: 'RUNNING_ON_AZURE'
@@ -67,7 +67,7 @@ resource webAppSettings 'Microsoft.Web/sites/config@2021-02-01' = {
   name: '${webAppName}/appsettings'
   properties: {
     WEBSITE_NODE_DEFAULT_VERSION: '~18'
-    WEBSITE_RUN_FROM_PACKAGE: '1'
+    SCM_SCRIPT_GENERATOR_ARGS: '--node'
     BOT_ID: botAadAppClientId
     BOT_PASSWORD: botAadAppClientSecret
     BOT_DOMAIN: webApp.properties.defaultHostName
@@ -90,6 +90,6 @@ module azureBotRegistration './botRegistration/azurebot.bicep' = {
   }
 }
 
-// The output will be persisted in .env.{envName}. Visit https://aka.ms/teamsfx-actions/arm-deploy for more details.
+// The output will be persisted in .env.{envName}. Visit https://aka.ms/teamsfx-provision-arm#output for more details.
 output BOT_AZURE_APP_SERVICE_RESOURCE_ID string = webApp.id
 output BOT_DOMAIN string = webApp.properties.defaultHostName

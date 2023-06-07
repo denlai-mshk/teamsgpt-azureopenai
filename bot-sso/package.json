@@ -26,6 +26,7 @@
     "@microsoft/teamsfx": "^2.0.0",
     "adaptive-expressions": "^4.15.0",
     "adaptivecards-templating": "2.1.0",
+    "azure-openai": "^0.9.4",    
     "botbuilder": "^4.18.0",
     "botbuilder-dialogs": "^4.18.0",
     "isomorphic-fetch": "^3.0.0",

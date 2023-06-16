@@ -74,9 +74,9 @@ export class TeamsBot extends TeamsActivityHandler {
         const completion = await this.openAiApi.createChatCompletion({
           model: process.env.AOAI_MODEL,
           messages: revisedprompt,
-          temperature: parseInt(process.env.CHATFPT_TEMPERATURE),
+          temperature: parseFloat(process.env.CHATFPT_TEMPERATURE),
           max_tokens:parseInt(process.env.CHATGPT_MAXTOKEN),
-          top_p: parseInt(process.env.CHATGPT_TOPP),
+          top_p: parseFloat(process.env.CHATGPT_TOPP),
           stop: process.env.CHATGPT_STOPSEQ
         });
         console.log("createChatCompletion response: " + completion.data.choices[0].message.content);
